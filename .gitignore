@@ -1,0 +1,8 @@
+node_modules
+dist
+.wrangler
+.dev.vars
+.agents
+skills-lock.json
+*.log
+.DS_Store
