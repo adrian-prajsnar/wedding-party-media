@@ -1,6 +1,6 @@
 import type { Hono } from "hono";
 import type { Env } from "./env";
-import { clearCookieHeader, cookieHeader, isAdmin, loginCookie } from "./auth";
+import { clearCookieHeader, cookieHeader, guestAccessRequired, isAdmin, loginCookie } from "./auth";
 import { deleteUpload, listAdminMedia } from "./media";
 
 type AppEnv = { Bindings: Env };
@@ -34,6 +34,17 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   app.get("/api/admin/session", async (c) => {
     if (!(await isAdmin(c))) return c.json({ error: "unauthorized" }, 401);
     return c.json({ ok: true });
+  });
+
+  app.get("/api/admin/entry-url", async (c) => {
+    if (!(await isAdmin(c))) return c.json({ error: "unauthorized" }, 401);
+    const origin = new URL(c.req.url).origin;
+    const token = c.env.GUEST_ACCESS_TOKEN;
+    if (!guestAccessRequired(c) || !token) {
+      return c.json({ url: `${origin}/`, guestRequired: false });
+    }
+    const url = `${origin}/?access=${encodeURIComponent(token)}`;
+    return c.json({ url, guestRequired: true });
   });
 
   app.get("/api/admin/media", async (c) => {

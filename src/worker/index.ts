@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "./env";
 import { registerAdminRoutes } from "./admin";
+import { registerGuestRoutes } from "./guest";
 import { registerMediaRoutes } from "./media";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -18,6 +19,7 @@ app.get("/api/config", (c) => {
 });
 
 registerMediaRoutes(app);
+registerGuestRoutes(app);
 registerAdminRoutes(app);
 
 export default app;

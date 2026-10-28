@@ -3,7 +3,7 @@ import { displayName, HOURLY_UPLOAD_CAP, validateStoredObject, validateUpload, t
 import { parseByteRange } from "../shared/range";
 import type { Env } from "./env";
 import { canPresign, presignPut } from "./sign";
-import { isAdmin } from "./auth";
+import { canViewGallery, isAdmin } from "./auth";
 
 type AppEnv = { Bindings: Env };
 type AppContext = Context<AppEnv>;
@@ -24,8 +24,15 @@ interface UploadRow {
 
 const PAGE_SIZE = 60;
 
+async function denyGuest(c: AppContext): Promise<Response | null> {
+  if (await canViewGallery(c)) return null;
+  return c.json({ error: "unauthorized" }, 401);
+}
+
 export function registerMediaRoutes(app: Hono<AppEnv>) {
   app.post("/api/uploads", async (c) => {
+    const denied = await denyGuest(c);
+    if (denied) return denied;
     let body: unknown;
     try {
       body = await c.req.json();
@@ -83,6 +90,8 @@ export function registerMediaRoutes(app: Hono<AppEnv>) {
   app.put("/api/uploads/:id/thumb", (c) => receiveObject(c, "thumb"));
 
   app.post("/api/uploads/:id/complete", async (c) => {
+    const denied = await denyGuest(c);
+    if (denied) return denied;
     const row = await findUpload(c, c.req.param("id"));
     if (!row) return c.json({ error: "not_found" }, 404);
     if (row.status === "ready") return c.json({ ok: true });
@@ -115,6 +124,8 @@ export function registerMediaRoutes(app: Hono<AppEnv>) {
   });
 
   app.get("/api/media", async (c) => {
+    const denied = await denyGuest(c);
+    if (denied) return denied;
     const cursor = decodeCursor(c.req.query("cursor"));
     const statement = cursor
       ? c.env.DB.prepare(
@@ -167,6 +178,8 @@ async function uploadTarget(
 
 async function receiveObject(c: AppContext, slot: "content" | "thumb") {
   if (canPresign(c.env)) return c.json({ error: "invalid" }, 404);
+  const denied = await denyGuest(c);
+  if (denied) return denied;
   const row = await findUpload(c, c.req.param("id"));
   if (!row || row.status !== "pending") return c.json({ error: "not_found" }, 404);
 
@@ -181,6 +194,8 @@ async function receiveObject(c: AppContext, slot: "content" | "thumb") {
 }
 
 async function streamMedia(c: AppContext, slot: "file" | "thumb") {
+  const denied = await denyGuest(c);
+  if (denied) return denied;
   const row = await findUpload(c, c.req.param("id"));
   if (!row || row.status !== "ready") return c.json({ error: "not_found" }, 404);
   if (row.hidden && !(await isAdmin(c))) return c.json({ error: "not_found" }, 404);

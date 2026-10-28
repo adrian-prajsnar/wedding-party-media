@@ -88,6 +88,23 @@ export async function adminSession(): Promise<boolean> {
   return response.ok;
 }
 
+export async function guestSession(): Promise<{ ok: boolean; required: boolean }> {
+  const response = await fetch("/api/guest/session");
+  if (!response.ok) return { ok: false, required: true };
+  return (await response.json()) as { ok: boolean; required: boolean };
+}
+
+export async function activateGuest(token: string): Promise<void> {
+  await requestJson("/api/guest/activate", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
+
+export async function adminEntryUrl(): Promise<{ url: string; guestRequired: boolean }> {
+  return requestJson("/api/admin/entry-url");
+}
+
 export async function adminLogin(password: string): Promise<void> {
   await requestJson("/api/admin/login", {
     method: "POST",

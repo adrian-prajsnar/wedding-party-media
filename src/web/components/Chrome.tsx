@@ -13,13 +13,14 @@ export function BrandMark({ className }: { className?: string }) {
 export function Header() {
   const { pathname } = useLocation();
   const onAdmin = pathname.startsWith("/admin");
+  const onGuestDenied = pathname === "/unauthorized";
 
   return (
     <header className="site-header">
       <Link className="nav-brand" to="/">
         <BrandMark />
       </Link>
-      {onAdmin ? null : (
+      {onAdmin || onGuestDenied ? null : (
         <nav className="site-nav" aria-label="Główne">
           <Link to="/" aria-current={pathname === "/" ? "true" : undefined}>
             {copy.navGallery}

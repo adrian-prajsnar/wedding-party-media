@@ -13,7 +13,7 @@ npm run dev
 
 Open the URL Vite prints. The local admin password is the `ADMIN_PASSWORD` value in `.dev.vars`.
 
-Leave the R2 key fields empty for local development. The browser then uploads through the Worker into Wrangler's local R2. When those keys are set, uploads go directly to Cloudflare R2 with a signed URL.
+Leave the R2 key fields empty for local development. The browser then uploads through the Worker into Wrangler's local R2. In production, uploads also go through the Worker by default (no R2 CORS or API token permissions needed). Set `R2_PRESIGNED_UPLOAD=true` in Wrangler vars only if you want direct browser-to-R2 uploads with a correctly scoped R2 API token and bucket CORS.
 
 Admin pages:
 
@@ -32,6 +32,7 @@ Change the couple name and the date in `wrangler.jsonc` (`WEDDING_TITLE`, `WEDDI
 ```bash
 npx wrangler secret put ADMIN_PASSWORD
 npx wrangler secret put COOKIE_SECRET
+npx wrangler secret put GUEST_ACCESS_TOKEN
 npx wrangler secret put R2_ACCESS_KEY_ID
 npx wrangler secret put R2_SECRET_ACCESS_KEY
 npx wrangler secret put R2_ACCOUNT_ID
@@ -45,6 +46,8 @@ npx wrangler d1 migrations apply wedding-media --remote
 npm run deploy
 ```
 
-7. Print the QR code only after the production address is final. It opens the gallery home page.
+7. Set `GUEST_ACCESS_TOKEN` to a long random string (for example 32+ characters from a password manager). The QR code at `/admin/qr` then opens a one-time invite link; after scanning, the guest browser keeps a cookie for 30 days. Without that step, `/` and `/upload` show an unauthorized page at `/unauthorized` and the media APIs return `401`. Leave `GUEST_ACCESS_TOKEN` empty in local dev to keep the gallery open.
+
+8. Print the QR code only after the production address is final.
 
 A video longer than 60 seconds or larger than 80 MB is refused. Photos are resized in the browser before upload. An empty name is shown as Anonimowy.

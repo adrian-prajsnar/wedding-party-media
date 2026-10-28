@@ -2,6 +2,7 @@ import { AwsClient } from "aws4fetch";
 import type { Env } from "./env";
 
 export function canPresign(env: Env): boolean {
+  if (env.R2_PRESIGNED_UPLOAD !== "true") return false;
   return Boolean(env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY && env.R2_ACCOUNT_ID && env.R2_BUCKET_NAME);
 }
 

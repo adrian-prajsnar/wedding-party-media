@@ -2,7 +2,9 @@ import type { Context } from "hono";
 import type { Env } from "./env";
 
 export const ADMIN_COOKIE = "wpm_admin";
+export const GUEST_COOKIE = "wpm_guest";
 const SESSION_MS = 12 * 60 * 60 * 1000;
+const GUEST_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 
 type AuthContext = Context<{ Bindings: Env }>;
 
@@ -13,9 +15,44 @@ export async function loginCookie(secret: string): Promise<string> {
 }
 
 export async function isAdmin(c: AuthContext): Promise<boolean> {
+  return hasSignedSession(c, ADMIN_COOKIE);
+}
+
+export function guestAccessRequired(c: AuthContext): boolean {
+  return Boolean(c.env.GUEST_ACCESS_TOKEN && c.env.COOKIE_SECRET);
+}
+
+export async function isGuest(c: AuthContext): Promise<boolean> {
+  return hasSignedSession(c, GUEST_COOKIE);
+}
+
+export async function canViewGallery(c: AuthContext): Promise<boolean> {
+  if (!guestAccessRequired(c)) return true;
+  if (await isAdmin(c)) return true;
+  return isGuest(c);
+}
+
+export async function loginGuestCookie(secret: string): Promise<string> {
+  const expires = Date.now() + GUEST_SESSION_MS;
+  const signature = await sign(secret, String(expires));
+  return `${expires}.${signature}`;
+}
+
+export function guestCookieHeader(value: string, secure: boolean, maxAge: number): string {
+  return signedCookieHeader(GUEST_COOKIE, value, secure, maxAge);
+}
+
+export function secretTokenMatch(given: string, expected: string): boolean {
+  const a = new TextEncoder().encode(given);
+  const b = new TextEncoder().encode(expected);
+  if (a.byteLength !== b.byteLength) return false;
+  return crypto.subtle.timingSafeEqual(a, b);
+}
+
+async function hasSignedSession(c: AuthContext, cookieName: string): Promise<boolean> {
   const secret = c.env.COOKIE_SECRET;
   if (!secret) return false;
-  const token = readCookie(c.req.header("cookie"), ADMIN_COOKIE);
+  const token = readCookie(c.req.header("cookie"), cookieName);
   if (!token) return false;
   const [expiresText, signature] = token.split(".");
   if (!expiresText || !signature) return false;
@@ -26,13 +63,11 @@ export async function isAdmin(c: AuthContext): Promise<boolean> {
 }
 
 export function cookieHeader(value: string, secure: boolean, maxAge: number): string {
-  const parts = [
-    `${ADMIN_COOKIE}=${value}`,
-    "HttpOnly",
-    "Path=/",
-    "SameSite=Lax",
-    `Max-Age=${maxAge}`,
-  ];
+  return signedCookieHeader(ADMIN_COOKIE, value, secure, maxAge);
+}
+
+function signedCookieHeader(name: string, value: string, secure: boolean, maxAge: number): string {
+  const parts = [`${name}=${value}`, "HttpOnly", "Path=/", "SameSite=Lax", `Max-Age=${maxAge}`];
   if (secure) parts.push("Secure");
   return parts.join("; ");
 }

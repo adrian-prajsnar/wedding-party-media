@@ -7,6 +7,7 @@ import {
 } from "../../shared/limits";
 import { ApiError, completeUpload, createUpload, putBlob } from "../api";
 import { Ornament } from "../components/Chrome";
+import { HeartIcon } from "../components/Icons";
 import { copy, formatRemovePreview, formatSubmit, messageForError } from "../i18n";
 import { compressPhoto } from "../lib/compressPhoto";
 import { inspectVideo } from "../lib/inspectVideo";
@@ -134,7 +135,10 @@ export function UploadPage() {
         {done ? (
           <div className="success-panel" role="status">
             <span className="success-panel__mark" aria-hidden="true" />
-            <p className="success-panel__title">{copy.uploadedTitle}</p>
+            <p className="success-panel__title">
+              {copy.uploadedTitle}
+              <HeartIcon className="heart-icon heart-icon--title" />
+            </p>
             <p className="notice-body">{copy.uploaded}</p>
             {failed.length > 0 ? (
               <ul className="file-errors">

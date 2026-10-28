@@ -21,7 +21,7 @@ export const copy = {
   loadError: "Coś poszło nie tak. Spróbujcie odświeżyć stronę.",
 
   uploadKicker: "Pokażcie, co się dzieje!",
-  uploadTitle: "Macie coś dobrego? Wrzucajcie!",
+  uploadTitle: "Masz coś dobrego? Wrzucaj!",
 
   nameLabel: "Kto wrzuca?",
   namePlaceholder: "np. Ciocia Basia",
@@ -37,8 +37,8 @@ export const copy = {
   removePreview: "Usuń",
   sending: "Wrzucamy…",
 
-  uploadedTitle: "No i pięknie! ❤️",
-  uploaded: "Wasze fotki są już w galerii. Dzięki i bawcie się dobrze!",
+  uploadedTitle: "Poszło w świat!",
+  uploaded: "Twoje fotki już są w galerii. A teraz telefon do kieszeni i na parkiet!",
   uploadMore: "Wrzuć kolejne",
   backToGallery: "Zobacz galerię",
 
@@ -58,9 +58,14 @@ export const copy = {
   download: "Pobierz",
   playbackFailed: "Nie udało się odtworzyć filmu na tym urządzeniu.",
 
-  adminKicker: "Dla pary młodej",
-  adminTitle: "Nasz weselny album",
-  adminLead: "Wszystkie zdjęcia i filmy od gości w jednym miejscu. Możecie je ukrywać lub usuwać.",
+  adminKicker: "Strefa pary młodej",
+  adminTitle: "Wasz weselny album",
+  adminLead: "Zobaczcie wszystkie zdjęcia i filmy, które dodali goście. Przeglądajcie wspomnienia i decydujcie, co zostaje w galerii!",
+  adminLoginKicker: "Strefa pary młodej",
+  adminLoginTitle: "Zobaczcie, co Was ominęło!",
+  adminLoginLead:
+    "Goście pstrykają, nagrywają i wrzucają. Zalogujcie się, żeby zobaczyć wesele ich oczami!",
+  adminLoginNote: "Nie każdy kadr musi trafić do galerii — tutaj decydujecie, co zostaje.",
 
   passwordLabel: "Hasło",
   login: "Zaloguj się",
@@ -71,17 +76,32 @@ export const copy = {
   qrKicker: "Dla naszych gości",
   qrTitle: "Skanujcie i wrzucajcie!",
   qrLead:
-    "Wydrukujcie kod QR i ustawcie go na stołach. Goście mogą od razu dodawać zdjęcia i filmy.",
-  qrCta: "Skanuj i wrzucaj fotki!",
+    "Wydrukujcie kod QR i ustawcie go na stołach. Goście po zeskanowaniu dostają dostęp do galerii i mogą od razu dodawać zdjęcia i filmy.",
+  qrSheetHeading: "Pstrykasz? Podziel się z nami!",
+  qrSheetBody:
+    "Śmieszne miny, szalone tańce, a może coś, czego nawet nie zauważyliśmy? Zeskanuj kod QR i wrzuć swoje zdjęcia lub filmy. Chcemy zobaczyć, co się dzieje, kiedy akurat patrzymy w drugą stronę!",
   print: "Drukuj",
+
+
+  guestDeniedKicker: "Tylko dla naszych gości",
+  guestDeniedTitle: "Zaproszenie obowiązkowe!",
+  guestDeniedLead:
+    "Ta galeria jest tylko dla tych, którzy świętują razem z nami!",
+  guestDeniedBody:
+    "Jesteś na weselu? Zeskanuj kod QR ze swojego stołu, żeby zobaczyć galerię i podzielić się zdjęciami. Sam link nie wystarczy!",
+  
 
   hide: "Ukryj",
   unhide: "Pokaż",
   remove: "Usuń",
-  removeConfirm: "Na pewno usunąć ten plik? Nie można tego cofnąć.",
+  removeTitlePhoto: "Usunąć zdjęcie?",
+  removeTitleVideo: "Usunąć film?",
+  removeConfirmPhoto: "Czy na pewno chcesz usunąć zdjęcie gościa",
+  removeConfirmVideo: "Czy na pewno chcesz usunąć film gościa",
+  removeConfirmTail: "? Tej akcji nie można cofnąć.",
   removeFailed: "Nie udało się usunąć pliku.",
+  cancel: "Anuluj",
   hidden: "Ukryte",
-  visible: "Widoczne",
   open: "Otwórz",
   adminEmpty: "Jeszcze nikt nic nie dodał.",
   backAdmin: "Wróć do listy",
@@ -90,6 +110,13 @@ export const copy = {
   video: "Film",
   anonymous: "Anonimowy",
   footerPhotoAlt: "Para młoda na moście przed domem weselnym",
+
+notFoundKicker: "Ups! Coś poszło nie tak",
+notFoundTitle: "To chyba nie ta sala!",
+notFoundLead:"Wygląda na to, że ta strona gdzieś się zapodziała. Może poszła na parkiet?",
+notFoundBody: "Nic straconego! Wróć do galerii i zobacz, co dzieje się na weselu.",
+notFoundCta: "Wróć do galerii",
+
 } as const;
 
 export function formatPostedAt(iso: string): string {
